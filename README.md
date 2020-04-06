@@ -1,3 +1,23 @@
+# This is the Assignment Choosing Web App
+
+The project is about a simple web app for students to choose assignment topics easier.
+For exmaple:
+  When choosing a topic for a presentation.
+
+## Reason why I am making this app
+
+Due to covid-19, students are mostly taking classes online at home.
+It is hard for a student to choose a topic when the teacher just sends a word doc with the topics
+while students reply back with a message in a group chat.
+Students who are slower in deciding which to take will need to read through all the messages first
+before knowing which topics are available.
+
+## Improvement is needed
+
+The code is still very rough. This is only the first working prototype.
+New code will be uploaded frequently.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
