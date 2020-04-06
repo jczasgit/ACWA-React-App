@@ -1,0 +1,39 @@
+.divStyle {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+    min-height: 150px;
+    max-height: 30vh;
+    background-color: #F23557;
+    border-radius: 20px;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    position: relative;
+}
+
+.h2Style {
+    color: #FDF6F6;
+}
+
+.description-container {
+    width:80%;
+}
+
+.pStyle {
+    color: #FDF6F6;
+    text-align: left;
+    font-size: 0.8em;
+    overflow-wrap: break-word;
+}
+
+.aStyle {
+    text-decoration:none;
+    color:#F0D43A;
+    font-weight: 600;
+    font-size: 0.9em; 
+    position: absolute;
+    right: 20px;
+    top: 80%;
+}
+
