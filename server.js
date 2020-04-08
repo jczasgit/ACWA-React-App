@@ -1,13 +1,13 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 3001;
 const Datastore = require('nedb');
 const database = new Datastore('database.db');
 database.loadDatabase();
-app.use(express.static('./client/build'));
+//app.use(express.static('./client/build'));
 app.use(express.json());
 
-app.get('/api/get-post', (req, res) => {
+app.get('/api/get/assignments', (req, res) => {
     database.find({}, (err, data) => {
         if(err) res.end();
         res.json(data);

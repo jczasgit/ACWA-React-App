@@ -17,6 +17,7 @@ const divStyle = {
     height: '10vh',
     backgroundColor: '#3B4A6B',
     position: 'relative',
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.4)',
 }
 
 const h1Style = {
