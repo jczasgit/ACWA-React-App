@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import styles from './gridStyle';
+import '../css/formTitle.css';
 
 export default class FormTitle extends Component {
 
@@ -21,12 +18,14 @@ export default class FormTitle extends Component {
         const {values, handleChange} = this.props;
         return (
             <React.Fragment>
-                <Grid container direction='column' justify='center' alignItems='center' spacing={4} style={styles.gridContainer}>
-                    <Grid item con><TextField placeholder='Enter Title' label='Title' onChange={handleChange('title')} defaultValue={values.title}></TextField></Grid>
-                    <Grid item>
-                        <Button color='primary' variant='contained' size='small' onClick={this.continue}>Continue</Button>
-                    </Grid>
-                </Grid>
+                <div className='gridContainer'>
+                    <div>
+                        <input type="text" name="title" onChange={handleChange('title')} value={values.title}/>
+                    </div>
+                    <div>
+                        <input type="button" value="Continue"  onClick={this.continue}/>
+                    </div>
+                </div>
             </React.Fragment>
         )
     }
