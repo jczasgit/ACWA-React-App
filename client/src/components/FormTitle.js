@@ -1,5 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import {Grid, Button} from '@material-ui/core';
 import '../css/formTitle.css';
+
+// colors: pink-main = #e91e63, pink-light = #f8bbd0, pink-dark = #c2185b, contrast = #fff;
 
 export default class FormTitle extends Component {
 
@@ -18,14 +21,34 @@ export default class FormTitle extends Component {
         const {values, handleChange} = this.props;
         return (
             <React.Fragment>
-                <div className='gridContainer'>
-                    <div>
-                        <input type="text" name="title" onChange={handleChange('title')} value={values.title}/>
-                    </div>
-                    <div>
-                        <input type="button" value="Continue"  onClick={this.continue}/>
-                    </div>
-                </div>
+                <Grid container className='gridContainer' spacing={2}>
+                    <Grid item container>
+                        <Grid item xs={2} lg={3}></Grid>
+                        <Grid item xs={8} lg={6}>
+                            <div className='form'>
+                                <input 
+                                type="text" 
+                                name="title" 
+                                onChange={handleChange('title')} 
+                                value={values.title} 
+                                autoComplete="off"
+                                maxLength='70'
+                                required/>
+                                <label htmlFor='title' className='labelTitle'>
+                                    <span className='contentTitle'>Title</span>
+                                </label>
+                            </div>
+                        </Grid>
+                        <Grid item xs={2} lg={3}></Grid>
+                    </Grid>
+                    <Grid item container>
+                        <Grid item xs={2} lg={3}></Grid>
+                        <Grid item xs={8} ls={6}>
+                            <Button color="primary" variant="outlined" onClick={this.continue} fullWidth={true}>Continue</Button>
+                        </Grid>
+                        <Grid item xs={2} lg={3}></Grid>
+                    </Grid>
+                </Grid>
             </React.Fragment>
         )
     }

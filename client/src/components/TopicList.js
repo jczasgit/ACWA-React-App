@@ -6,7 +6,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 export default class TopicList extends Component {
@@ -21,9 +21,9 @@ export default class TopicList extends Component {
                         {content}
                     </TableCell>
                     <TableCell align="right">
-                        <Fab size='small' color='primary' aria-label="delete" onClick={this.props.delTopicField.bind(this, id)}>
-                            <DeleteForeverIcon/>
-                        </Fab>
+                        <IconButton onClick={this.props.delTopicField.bind(this, id)} size='small' color='secondary'>
+                        <DeleteForeverIcon/>
+                        </IconButton>
                     </TableCell>
                 </TableRow>
             );

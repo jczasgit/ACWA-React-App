@@ -6,7 +6,8 @@ class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            assignments: []
+            assignments: [],
+            isOverlay: false,
         }
         this.getAssignments = this.getAssignments.bind(this);
     }
@@ -32,6 +33,7 @@ class Home extends Component {
         return (
         <React.Fragment>
             <Header/>
+            
             <TopicCell assignments={this.state.assignments}/>
         </React.Fragment>
         );

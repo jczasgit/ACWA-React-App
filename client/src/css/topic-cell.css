@@ -3,18 +3,17 @@
     align-items: center;
     flex-direction: column;
     width: 90%;
-    min-height: 150px;
-    max-height: 30vh;
-    background-color: #F23557;
+    min-height: 100px;
+    max-height: 300px;
+    background-color: #f8bbd0;
     border-radius: 20px;
     margin-top: 1.5em;
     margin-bottom: 1.5em;
-    position: relative;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    padding: 1em;
 }
 
 .h2Style {
-    color: #FDF6F6;
+    color: #212121;
     font-size: 1.2em;
     overflow-wrap: break-word;
     text-align: center;
@@ -24,15 +23,25 @@
     width:80%;
 }
 
+.description{
+    display: block;
+    display: -webkit-box;
+    height: 100%;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}   
+
 .pStyle {
-    color: #FDF6F6;
+    color: #212121;
     text-align: left;
     font-size: 0.7em;
     overflow-wrap: break-word;
 }
 
 .dateStyle {
-    color: #FDF6F6;
+    color: #212121;
     opacity: 0.8;
     font-size: 0.5em;
     text-align: left;
@@ -40,10 +49,8 @@
 
 .aStyle {
     text-decoration:none;
-    color:#F0D43A;
+    color:#e91e63;
     font-weight: 600;
-    font-size: 0.9em; 
-    position: absolute;
-    right: 20px;
-    top: 80%;
+    font-size: 0.9em;
+    text-align: right;
 }

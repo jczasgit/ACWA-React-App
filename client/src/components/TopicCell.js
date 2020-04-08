@@ -10,10 +10,12 @@ export default class TopicCell extends Component {
                 <div className="divStyle" key={id}>
                     <h2 className="h2Style">{title}</h2>
                     <div className="description-container">
-                        <p className="pStyle">{description}</p>
-                        <p className='dateStyle'>{date}</p>
+                        <div className="pStyle description">{description}</div>
                     </div>
-                    <a href="/" className='aStyle'>Tap!</a>
+                    <div style={{display: 'flex' ,width: '80%', justifyContent: 'space-around', borderTop: '1px dashed #e91e63', marginTop: '10px', paddingTop: '10px'}}>
+                        <p className='dateStyle'>{date}</p>
+                        <a href="/" className='aStyle'>Tap!</a>
+                    </div>
                 </div>
             );
         });

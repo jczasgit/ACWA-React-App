@@ -15,7 +15,8 @@ export default class AddTopic extends Component {
             title: '',
             description: '',
             step: 1,
-            topics: []
+            topics: [],
+            uploaded: false,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,6 +25,7 @@ export default class AddTopic extends Component {
         this.addTopicField = this.addTopicField.bind(this);
         this.delTopicField = this.delTopicField.bind(this);
         this.goBack = this.goBack.bind(this);
+        this.uploadCheck = this.uploadCheck.bind(this);
     }
 
     nextStep = () => {
@@ -69,7 +71,16 @@ export default class AddTopic extends Component {
     }
 
     goBack = e => {
+        this.setState({uploaded: false});
         this.props.history.push('/');
+    }
+
+    uploadCheck = bool => {
+        if(bool) {
+            this.setState({uploaded: true})
+        } else {
+            return;
+        }
     }
 
     render() {
@@ -103,14 +114,14 @@ export default class AddTopic extends Component {
                 return (
                     <React.Fragment>
                         <Header />
-                        <AddTopicConfirmed values={values} nextStep={this.nextStep} prevStep={this.prevStep}/>
+                        <AddTopicConfirmed values={values} nextStep={this.nextStep} prevStep={this.prevStep} uploadCheck={this.uploadCheck}/>
                     </React.Fragment>
                 )
             case 5:
                 return (
                     <React.Fragment>
                         <Header />
-                        <AddTopicFinish goBack={this.goBack}/>
+                        <AddTopicFinish goBack={this.goBack} uploaded={this.state.uploaded}/>
                     </React.Fragment>
                 )
             default:

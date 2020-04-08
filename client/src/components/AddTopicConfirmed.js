@@ -18,14 +18,20 @@ export default class AddTopicConfirmed extends Component {
         }
         fetch('/api/add', options)
             .then(response => response.json())
-            .then(json => console.log(json))
-            .catch(err => console.error);
+            .then(json => {
+                console.log(json);
+                this.props.uploadCheck(true);
+            })
+            .catch(err => {
+                console.log(err);
+                this.props.uploadCheck(false);
+            });
     }
 
     continue = e => {
         e.preventDefault();
-        this.props.nextStep();
         this.uploadTopic();
+        this.props.nextStep();  
     }
 
     previous = e => {
@@ -40,29 +46,28 @@ export default class AddTopicConfirmed extends Component {
                 gridTemplateColumns: '1fr',
                 maxWidth: '90%',
                 minWidth: '170px',
-                backgroundColor: '#F23557',
-                margin: '2em auto',
-                padding: '1em',
-                borderRadius: '20px'
+                margin: '1.5em auto',
+                padding: '0.5em',
+                borderRadius: '10px'
             },
             h3Style: {
                 textAlign: 'center',
-                color: '#FDF6F6'
+                color: '#212121'
             },
             pStyle: {
-                color: '#FDF6F6',
+                color: '#212121',
                 textAlign: 'left',
                 fontSize: '0.7em',
                 overflowWrap: 'break-word',
             },
             pStyleTopics: {
-                color: '#FDF6F6',
+                color: '#212121',
                 textAlign: 'center',
                 fontSize: '0.7em',
                 overflowWrap: 'break-word',
             },
             pStyleTitle: {
-                color: '#FDF6F6',
+                color: '#212121',
                 textAlign: 'center',
                 fontWeigh: '500',
                 fontSize: '1em',
@@ -80,28 +85,39 @@ export default class AddTopicConfirmed extends Component {
 
         return (
             <React.Fragment>
-                <div style={useStyle.divContainer}>
-                    <div>
-                        <h3 style={useStyle.h3Style}>Title</h3>
-                        <p style={useStyle.pStyleTitle}>{title}</p>
-                    </div>
-                    <div>
-                        <h3 style={useStyle.h3Style}>Description</h3>
-                        <p style={useStyle.pStyle}>{description}</p>
-                    </div>
-                    <div>
-                        <h3 style={useStyle.h3Style}>Topics</h3>
-                        <div>
-                            {allTopics}
-                        </div>
-                    </div>
-                </div>
-                <Grid container direction='row' justify='center' alignItems='center' space={8}>
-                    <Grid item>
-                        <Button variant='outlined' size='small' onClick={this.previous}>Go Back</Button>
+                
+                <Grid container spacing={2}>
+                    <Grid item container>
+                        <Grid item xs={2}></Grid>
+                        <Grid item xs={8}>
+                            <div style={useStyle.divContainer}>
+                                <div style={{borderBottom: '3px solid #e91e63'}}>
+                                    <h3 style={useStyle.h3Style}>Title</h3>
+                                    <p style={useStyle.pStyleTitle}>{title}</p>
+                                </div>
+                                <div style={{borderBottom: '3px solid #e91e63'}}>
+                                    <h3 style={useStyle.h3Style}>Description</h3>
+                                    <p style={useStyle.pStyle}>{description}</p>
+                                </div>
+                                <div style={{borderBottom: '3px solid #e91e63'}}>
+                                    <h3 style={useStyle.h3Style}>Topics</h3>
+                                    <div style={{borderTop: '2px dashed #e91e63'}}>
+                                        {allTopics}
+                                    </div>
+                                </div>
+                            </div>
+                        </Grid>
+                        <Grid item xs={2}></Grid>
                     </Grid>
-                    <Grid item>
-                        <Button color='primary' variant='contained' size='small' onClick={this.continue}>Confrim and Save</Button>
+                    <Grid item container>
+                        <Grid item xs={3}></Grid>
+                        <Grid item xs={3}>
+                            <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Button color='primary' variant='contained' size='small' onClick={this.continue}>Confrim</Button>
+                        </Grid>
+                        <Grid item xs={3}></Grid>
                     </Grid>
                 </Grid>
             </React.Fragment>
