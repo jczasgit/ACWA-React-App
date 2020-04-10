@@ -1,0 +1,82 @@
+.gridContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 3em auto;
+}
+
+.form {
+    width: 100%;
+    height: 65px;
+    position: relative;
+    background-color: #f8bbd0;
+    overflow: hidden;
+}
+
+.form input {
+    width: 100%;
+    height: 100%;
+    color: #000;
+    padding-top: 40px;
+    border: none;
+    outline: none;
+}
+
+.labelTitle {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height:100%;
+    pointer-events: none;
+    border-bottom: 1px solid #000;
+}
+
+.labelTitle::after {
+    content: "";
+    position: absolute;
+    left: 0px;
+    bottom: -1px;
+    height: 100%;
+    width: 100%;
+    border-bottom: 3px solid #e91e63;
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transition: all 300ms ease;
+    -webkit-transition: all 300ms ease;
+    -moz-transition: all 300ms ease;
+    -ms-transition: all 300ms ease;
+    -o-transition: all 300ms ease;
+}
+
+.contentTitle {
+    position: absolute;
+    bottom: 3px;
+    left: 0px;
+    transition: all 200ms ease;
+    -webkit-transition: all 200ms ease;
+    -moz-transition: all 200ms ease;
+    -ms-transition: all 200ms ease;
+    -o-transition: all 200ms ease;
+}
+
+.form input:focus + .labelTitle .contentTitle, .form input:valid + .labelTitle .contentTitle {
+    transform: translateY(-90%);
+    -webkit-transform: translateY(-90%);
+    -moz-transform: translateY(-90%);
+    -ms-transform: translateY(-90%);
+    -o-transform: translateY(-90%);
+    font-size: 14px;
+    color: #e91e63;
+}
+
+.form input:focus + .labelTitle::after, .form input:valid + .labelTitle::after {
+    transform: translateY(0%);
+    -webkit-transform: translateY(0%);
+    -moz-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    -o-transform: translateY(0%);
+} 

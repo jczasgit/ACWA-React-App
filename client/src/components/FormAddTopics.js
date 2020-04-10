@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import Fab from '@material-ui/core/Fab'
+import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import TopicList from './TopicList';
 import Button from '@material-ui/core/Button';
@@ -26,6 +26,13 @@ export default class FormAddTopics extends Component {
         this.setState({content: ''});
     }
 
+    onEnterAdd = e => {
+        if (e.key === 'Enter') {
+            this.props.addTopicField(this.state.content);
+            this.setState({content: ''});
+        }
+    }
+
     continue = e => {
         e.preventDefault();
         this.props.nextStep();
@@ -39,26 +46,49 @@ export default class FormAddTopics extends Component {
     render() {
         return (
             <React.Fragment>
-                <Grid container direction='row' justify='center' alignItems='center' space={10}>
-                    <Grid item>
-                        <TextField placeholder="Enter Topic" label='Topic' onChange={this.handleChange} value={this.state.content}></TextField>
-                    </Grid>
-                    <Grid item>
-                        <Fab size='small' color='primary' aria-label="add" onClick={this.onAdd}>
-                            <AddIcon/>
-                        </Fab>
-                    </Grid>
-                </Grid>
-                <Grid container justify='center' alignItems='center'>
-                    <TopicList topics={this.props.topics} delTopicField={this.props.delTopicField}/>
-                </Grid>
-                <Grid container direction='row' justify='center' alignItems='center' space={8}>
-                        <Grid item>
-                            <Button variant='outlined' size='small' onClick={this.previous}>Go Back</Button>
+                <Grid container spacing={2}>
+                    <Grid item container>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
+                        <Grid item container justify='center' alignItems='center'>
+                            <TextField 
+                                placeholder="Enter Topic" 
+                                label='Topic' 
+                                onChange={this.handleChange} 
+                                value={this.state.content} 
+                                style={{width: '216px'}} 
+                                onKeyDown={this.onEnterAdd}>
+                            </TextField>
+                                <IconButton size='small' color='inherit' onClick={this.onAdd} style={{padding: '0 0 0 0', margin: '24px 0 0 0'}}>
+                                    <AddIcon/>
+                                </IconButton>
                         </Grid>
-                        <Grid item>
+                        </Grid>
+                        <Grid item xs={2} lg={4}></Grid>
+                    </Grid>
+                    <Grid item container>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <TopicList topics={this.props.topics} delTopicField={this.props.delTopicField}/>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={2} lg={4}></Grid>
+                    </Grid>
+                    <Grid item container>
+                    <Grid item xs={3} lg={4}></Grid>
+                        <Grid item xs={3} lg={2}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={3} lg={2}>
+                        <Grid item container justify='center' alignItems='center'>
                             <Button color='primary' variant='contained' size='small' onClick={this.continue}>Continue</Button>
                         </Grid>
+                        </Grid>
+                        <Grid item xs={3} lg={4}></Grid>
+                    </Grid>
                 </Grid>
             </React.Fragment>
         )

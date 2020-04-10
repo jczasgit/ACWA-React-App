@@ -1,20 +1,36 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import TopicItems from './TopicItems';
 import '../css/topic-cell.css';
 
 export default class TopicCell extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpen: false,
+            openedId: '',
+        }
+        this.opened = this.opened.bind(this);
+    }
+
+    opened = values => {
+        const {value, id} = values;
+        this.setState({isOpen: value, openedId: id});
+    }
+
     render() {
+
         const allStoredAssignments = this.props.assignments.map(assignment => {
-            const {id, title, description, timestamp} = assignment;
-            const date = new Date(timestamp).toDateString();
+            const {id} = assignment;
             return (
-                <div className="divStyle" key={id}>
-                    <h2 className="h2Style">{title}</h2>
-                    <div className="description-container">
-                        <p className="pStyle">{description}</p>
-                        <p className='dateStyle'>{date}</p>
-                    </div>
-                    <a href="/" className='aStyle'>Tap!</a>
-                </div>
+                <TopicItems
+                assignment={assignment}
+                key={id}
+                cellId={id}
+                isOpen={this.state.isOpen}
+                openedId={this.state.openedId} 
+                opened={this.opened}
+                refreshTopics={this.props.refreshTopics}/>
             );
         });
 
