@@ -11,12 +11,10 @@ export class App extends Component {
     return(
       <Router>
         <ThemeProvider theme={theme}>
-          <div className='cell-container'>
           <Switch>
               <Route exact path='/' component={Home}></Route>
               <Route path='/add-topic' component={AddTopic}></Route>
           </Switch>
-          </div>
         </ThemeProvider>
       </Router>
     );

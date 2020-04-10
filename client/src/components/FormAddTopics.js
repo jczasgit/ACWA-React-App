@@ -48,31 +48,46 @@ export default class FormAddTopics extends Component {
             <React.Fragment>
                 <Grid container spacing={2}>
                     <Grid item container>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={8}>
-                            <TextField placeholder="Enter Topic" label='Topic' onChange={this.handleChange} value={this.state.content} style={{width: '216px'}} onKeyDown={this.onEnterAdd}></TextField>
-                            <IconButton size='small' color='inherit' onClick={this.onAdd} style={{padding: '24px 0 0 0'}}>
-                                <AddIcon/>
-                            </IconButton>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
+                        <Grid item container justify='center' alignItems='center'>
+                            <TextField 
+                                placeholder="Enter Topic" 
+                                label='Topic' 
+                                onChange={this.handleChange} 
+                                value={this.state.content} 
+                                style={{width: '216px'}} 
+                                onKeyDown={this.onEnterAdd}>
+                            </TextField>
+                                <IconButton size='small' color='inherit' onClick={this.onAdd} style={{padding: '0 0 0 0', margin: '24px 0 0 0'}}>
+                                    <AddIcon/>
+                                </IconButton>
                         </Grid>
-                        <Grid item xs={2}></Grid>
+                        </Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                     <Grid item container>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={8}>
-                            <TopicList topics={this.props.topics} delTopicField={this.props.delTopicField}/>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <TopicList topics={this.props.topics} delTopicField={this.props.delTopicField}/>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={2}></Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                     <Grid item container>
-                        <Grid item xs={3}></Grid>
-                        <Grid item xs={3}>
-                            <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                    <Grid item xs={3} lg={4}></Grid>
+                        <Grid item xs={3} lg={2}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={3} lg={2}>
+                        <Grid item container justify='center' alignItems='center'>
                             <Button color='primary' variant='contained' size='small' onClick={this.continue}>Continue</Button>
                         </Grid>
-                        <Grid item xs={3}></Grid>
+                        </Grid>
+                        <Grid item xs={3} lg={4}></Grid>
                     </Grid>
                 </Grid>
             </React.Fragment>

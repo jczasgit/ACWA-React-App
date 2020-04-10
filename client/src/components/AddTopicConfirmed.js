@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import useStyle from './useStyles';
 
 export default class AddTopicConfirmed extends Component {
     constructor(props) {
@@ -40,40 +41,7 @@ export default class AddTopicConfirmed extends Component {
     }
 
     render() {
-        const useStyle = {
-            divContainer: {
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                maxWidth: '90%',
-                minWidth: '170px',
-                margin: '1.5em auto',
-                padding: '0.5em',
-                borderRadius: '10px'
-            },
-            h3Style: {
-                textAlign: 'center',
-                color: '#212121'
-            },
-            pStyle: {
-                color: '#212121',
-                textAlign: 'left',
-                fontSize: '0.7em',
-                overflowWrap: 'break-word',
-            },
-            pStyleTopics: {
-                color: '#212121',
-                textAlign: 'center',
-                fontSize: '0.7em',
-                overflowWrap: 'break-word',
-            },
-            pStyleTitle: {
-                color: '#212121',
-                textAlign: 'center',
-                fontWeigh: '500',
-                fontSize: '1em',
-                overflowWrap: 'break-word',
-            },
-        }
+        
 
         const {values: { title, description, topics}} = this.props;
         const allTopics = topics.map(topic => {
@@ -88,8 +56,8 @@ export default class AddTopicConfirmed extends Component {
                 
                 <Grid container spacing={2}>
                     <Grid item container>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
                             <div style={useStyle.divContainer}>
                                 <div style={{borderBottom: '3px solid #e91e63'}}>
                                     <h3 style={useStyle.h3Style}>Title</h3>
@@ -107,17 +75,21 @@ export default class AddTopicConfirmed extends Component {
                                 </div>
                             </div>
                         </Grid>
-                        <Grid item xs={2}></Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                     <Grid item container>
-                        <Grid item xs={3}></Grid>
-                        <Grid item xs={3}>
-                            <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                        <Grid item xs={3} lg={4}></Grid>
+                        <Grid item xs={3} lg={2}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={3}>
-                            <Button color='primary' variant='contained' size='small' onClick={this.continue}>Confrim</Button>
+                        <Grid item xs={3} lg={2}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <Button color='primary' variant='contained' size='small' onClick={this.continue}>Confrim</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={3}></Grid>
+                        <Grid item xs={3} lg={4}></Grid>
                     </Grid>
                 </Grid>
             </React.Fragment>

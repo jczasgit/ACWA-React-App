@@ -29,8 +29,8 @@ export default class FormDescription extends Component {
             <React.Fragment>
                 <Grid container spacing={2} style={styles.gridContainer}>
                     <Grid item container>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
                             <TextField 
                                 multiline={true} 
                                 label='Description' 
@@ -40,17 +40,21 @@ export default class FormDescription extends Component {
                                 style={{width:'100%'}}
                             ></TextField>
                         </Grid>
-                        <Grid item xs={2}></Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                     <Grid item container>
-                        <Grid item xs={3}></Grid>
-                        <Grid item xs={3}>
-                            <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                        <Grid item xs={3} lg={4}></Grid>
+                        <Grid item xs={3} lg={2}>
+                            <Grid item container justify='center' alignItems='center'>
+                                <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={3} lg={2}>
+                        <Grid item container justify='center' alignItems='center'>
                             <Button color='primary' variant='contained' size='small' onClick={this.continue}>Continue</Button>
                         </Grid>
-                        <Grid item xs={3}></Grid>
+                        </Grid>
+                        <Grid item xs={3} lg={4}></Grid>
                     </Grid>
                 </Grid>
             </React.Fragment>

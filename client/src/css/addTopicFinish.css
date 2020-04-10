@@ -1,0 +1,51 @@
+/*colors: pink-main = #e91e63, pink-light = #f8bbd0, pink-dark = #c2185b, contrast = #fff;*/
+
+.main-container {
+    background-color: #f8bbd0;
+    border-radius: 10px;
+    margin: 1.5em auto;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.redir-container {
+    margin-top: 1.5em;
+}
+
+.h3 {
+    font-size: 1.2em;
+    color: #212121;
+    text-align: left;
+}
+
+.pTitle {
+    font-size: 0.7em;
+    color: #212121;
+    text-align: center;
+}
+
+.pSub {
+    font-size: 0.7em;
+    color: #212121;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.p {
+    font-size: 0.6em;
+    color: #212121;
+    text-align: center;
+}
+
+.exitBtn {
+    padding: 0px 12px 0px 12px;
+}

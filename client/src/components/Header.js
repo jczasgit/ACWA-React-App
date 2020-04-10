@@ -6,7 +6,7 @@ export default class Header extends Component {
         return (
             <div style= {divStyle}>
                 <h1 style= {h1Style}>Assign!</h1>
-                <nav style= {navStyle}><Link to='/' style={linkStyle}>Home</Link><Link style={linkStyle} to='/add-topic'>Add Topic</Link></nav>
+                <nav style= {navStyle}><Link to='/' style={linkStyle}>Home</Link><Link style={linkStyle} to='/add-topic'>Add New Assignment!</Link></nav>
             </div>
         )
     }
@@ -38,6 +38,7 @@ const navStyle = {
     position: 'absolute',
     width: '100%',
     top: '80%',
+    fontSize: '0.85em',
     transform: 'translateY(-50%)',
     textAlign: 'center',
 }
@@ -46,4 +47,5 @@ const linkStyle = {
     color: '#fff',
     textDecoration: 'none',
     fontSize: '0.8em',
+    cursor: 'pointer',
 }

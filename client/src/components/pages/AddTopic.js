@@ -61,7 +61,7 @@ export default class AddTopic extends Component {
         if(content.length === 0) {
             return;
         }
-        const newTopic = {id: uuidv4(), content:content};
+        const newTopic = {id: uuidv4(), content:content, taken: false};
         this.setState({topics: [...this.state.topics, newTopic]});
     }
 

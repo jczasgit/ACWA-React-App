@@ -17,19 +17,33 @@ export default class FormTitle extends Component {
         }
     }
 
+    onEnterContinue = e => {
+        if (e.key === 'Enter') {
+            const {values} = this.props;
+            if(values.title.length === 0) {
+                alert('Please fill all the blanks.');
+                return;
+            } else {
+                this.props.nextStep();
+            }
+        }
+        
+    }
+
     render() {
         const {values, handleChange} = this.props;
         return (
             <React.Fragment>
                 <Grid container className='gridContainer' spacing={2}>
                     <Grid item container>
-                        <Grid item xs={2} lg={3}></Grid>
-                        <Grid item xs={8} lg={6}>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
                             <div className='form'>
                                 <input 
                                 type="text" 
                                 name="title" 
-                                onChange={handleChange('title')} 
+                                onChange={handleChange('title')}
+                                onKeyDown={this.onEnterContinue} 
                                 value={values.title} 
                                 autoComplete="off"
                                 maxLength='70'
@@ -39,14 +53,18 @@ export default class FormTitle extends Component {
                                 </label>
                             </div>
                         </Grid>
-                        <Grid item xs={2} lg={3}></Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                     <Grid item container>
-                        <Grid item xs={2} lg={3}></Grid>
-                        <Grid item xs={8} ls={6}>
-                            <Button color="primary" variant="outlined" onClick={this.continue} fullWidth={true}>Continue</Button>
+                        <Grid item xs={2} lg={4}></Grid>
+                        <Grid item xs={8} lg={4}>
+                            <Button 
+                            color="primary" 
+                            variant="outlined" 
+                            onClick={this.continue} 
+                            fullWidth={true}>Continue</Button>
                         </Grid>
-                        <Grid item xs={2} lg={3}></Grid>
+                        <Grid item xs={2} lg={4}></Grid>
                     </Grid>
                 </Grid>
             </React.Fragment>
