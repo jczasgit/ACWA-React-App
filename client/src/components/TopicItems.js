@@ -6,6 +6,7 @@ import {Grid ,Button} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 
 export default class TopicItems extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
@@ -14,21 +15,31 @@ export default class TopicItems extends Component {
             isMounted: false,
             selectedTopicId: '',
             submitted: false,
+            multiChoice: false,
+            controlledSwitch: false,
         }
 
         this.toggleSelection = this.toggleSelection.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.controlled = this.controlled.bind(this);
+        this.uncontrolled = this.uncontrolled.bind(this);
     }
 
     componentDidMount() {
+        this._isMounted = true;
         this.setState({isMounted: true});
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     toggleSelection = selectedTopicId => {
         // toggle the value ("topicId" or <empty string>)
         this.setState({selectedTopicId});
     }
-
+    
+    // submitting topic selection
     onSubmit = e => {
         e.preventDefault();
         const {selectedTopicId} = this.state;
@@ -36,7 +47,8 @@ export default class TopicItems extends Component {
         if(selectedTopicId === '') {
             return;
         } else {
-            fetch(`/api/topicselect/:${cellId}/:${selectedTopicId}`)
+            const token = localStorage.getItem('token');
+            fetch(`/api/topicselect/${cellId}/${selectedTopicId}`, {method: 'POST', headers: {Authorization: `Bearer ${token}`}})
                 .then(response => response.json())
                 .then(data => {
                     this.props.refreshTopics(data);
@@ -46,8 +58,41 @@ export default class TopicItems extends Component {
         }
     }
 
+    controlled() {
+        const {id} = this.props.assignment;
+        const {isOpen, openedId} = this.props;
+        if(isOpen && openedId === id) {
+            const {checkC, checkS} = this.state;
+            this.setState({checkC: !checkC, checkS: !checkS});
+            this.props.opened({value: !isOpen, id: ''});
+        } else if(isOpen && openedId !== id) {
+            return;
+        } else if (!isOpen) {
+            const {checkC, checkS} = this.state;
+            this.setState({checkC: !checkC, checkS: !checkS});
+            this.props.opened({value: !isOpen, id: id});
+        }
+    }
+
+    uncontrolled() {
+        const {checkS, checkC} = this.state;
+        if(this._isMounted) {
+            this.setState({checkS: !checkS, checkC: !checkC});
+        }
+    }
+
+    handleSwitchController = e => {
+        const {controlledSwitch} = this.state;
+        if(controlledSwitch) {
+            this.controlled();
+        } else {
+            this.uncontrolled();
+        }
+        
+    }
+
     render() {
-        const {id, title, description, timestamp, topics} = this.props.assignment;
+        const {title, description, timestamp, topics} = this.props.assignment;
         const date = new Date(timestamp).toDateString();
         return (
             <div className='divStyle'>
@@ -60,20 +105,7 @@ export default class TopicItems extends Component {
                         <p className='aStyle'>
                         <Switch
                             checked={this.state.checkS}
-                            onChange={() => {
-                                const {isOpen, openedId} = this.props;
-                                if(isOpen && openedId === id) {
-                                    const {checkC, checkS} = this.state;
-                                    this.setState({checkC: !checkC, checkS: !checkS});
-                                    this.props.opened({value: !isOpen, id: ''});
-                                } else if(isOpen && openedId !== id) {
-                                    return;
-                                } else if (!isOpen) {
-                                    const {checkC, checkS} = this.state;
-                                    this.setState({checkC: !checkC, checkS: !checkS});
-                                    this.props.opened({value: !isOpen, id: id});
-                                }
-                            }}
+                            onClick={this.handleSwitchController}
                             name="checkedS"
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                             color='primary'
@@ -81,18 +113,20 @@ export default class TopicItems extends Component {
                         </p>
                     </div>
                 <Collapse in={this.state.checkC} style={{width: '100%'}}>
-                    <div>
+                    <div> 
                         {this.state.submitted ? <Alert severity="success" style={{width: '90%', margin: 'auto', textTransform: 'uppercase', fontSize:'0.7em'}}>Alright! your choice has been submited!</Alert> : null}
                     </div>
                     <div className='topics-container'>
                         {topics.map(topic => {
-                            const {content, id, taken} = topic;
+                            const {content, id, taken, holder} = topic;
                             return(
-                                <TopicItem 
+                                <TopicItem
+                                multiChoice={this.state.multiChoice} 
                                 key={id}  
                                 content={content} 
                                 topicId={id}
-                                taken={taken}  
+                                taken={taken}
+                                holder={holder}  
                                 selectedTopicId={this.state.selectedTopicId}
                                 toggleSelection={this.toggleSelection}/>
                             );

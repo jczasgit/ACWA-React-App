@@ -4,6 +4,7 @@ import TopicCell from '../TopicCell';
 import Grid from '@material-ui/core/Grid';
 
 class Home extends Component {
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
@@ -14,24 +15,43 @@ class Home extends Component {
     }
 
     componentDidMount() {
-        this.getAssignments();
+        this._isMounted = true;
+        if(!this.props.isLogged) this.props.history.push('/access');
+        else this.getAssignments();
     }
 
     refreshTopics = dataArray => {
+        if(this._isMounted) {
         this.setState({assignments: dataArray});
+        }
     }
 
     getAssignments() {
-        fetch('/api/get/assignments/all')
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'POST',
+            headers: {Authorization: `Bearer ${token}`}
+        }
+        fetch('/api/get/assignments/all', options)
             .then(response => response.json())
             .then(data => {
-                //data.sort((a,b)=>b.timestamp-a.timestamp);
-                this.setState({assignments: data});
-            })
+                    if(data.msg) {
+                        if(this._isMounted) {
+                            this.props.reLogin();
+                            this.props.history.push('/access');
+                        }
+                    }
+                    else {
+                        if(this._isMounted) this.setState({assignments: data});
+                    }
+                })
             .catch(err => {
-                console.error(`Request failed. Message = ${err}`);
-                return {error: {message: 'Request failed.'}};
+                console.log(err);
             });
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
@@ -42,13 +62,13 @@ class Home extends Component {
                     <Header/>
                 </Grid>
                 <Grid item container justify='center' alignItems='center'>
-                    <Grid item xs={0} lg={3}></Grid>
+                    <Grid item xs={"auto"} lg={3}></Grid>
                     <Grid item xs={12} lg={6}>
                         <Grid item container justify='center' alignItems='center'>
                             <TopicCell assignments={this.state.assignments} refreshTopics={this.refreshTopics}/>
                         </Grid>
                     </Grid>
-                    <Grid item xs={0} lg={3}></Grid>
+                    <Grid item xs={"auto"} lg={3}></Grid>
                 </Grid>
             </Grid>
         </React.Fragment>

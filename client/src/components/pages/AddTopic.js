@@ -19,7 +19,6 @@ export default class AddTopic extends Component {
             uploaded: false,
         }
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
         this.addTopicField = this.addTopicField.bind(this);
@@ -42,26 +41,11 @@ export default class AddTopic extends Component {
         this.setState({[input]: e.target.value}); //change value according to the input tag.
     }
 
-    handleSubmit = e => {
-        e.preventDefault();
-        this.setState({id: uuidv4()});
-        const data = this.state;
-        const options = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data)
-        }
-        fetch('/api/add', options)
-            .then(response => response.json())
-            .then(json => console.log(json))
-            .catch(err => console.log(err));
-    }
-
     addTopicField(content) {
         if(content.length === 0) {
             return;
         }
-        const newTopic = {id: uuidv4(), content:content, taken: false};
+        const newTopic = {id: uuidv4(), content:content, taken: false, holder: 'No one, yet.'};
         this.setState({topics: [...this.state.topics, newTopic]});
     }
 

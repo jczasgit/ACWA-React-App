@@ -67,12 +67,27 @@
     width: 100%;
     margin: 1em auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .pTopic {
     color: #212121;
     text-align: left;
     font-size: 0.7em;
+    flex: 1;
     overflow-wrap: break-word;
+    padding: 1em;
+}
+
+.pHolder {
+    color: #212121;
+    text-align: left;
+    font-size: 10px;
+    overflow-wrap: break-word;
+    padding: 1em;
+}
+
+.holder {
+    font-size: 10px;
+    opacity: 0.8;
 }

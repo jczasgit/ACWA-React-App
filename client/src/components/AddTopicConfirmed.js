@@ -9,22 +9,30 @@ export default class AddTopicConfirmed extends Component {
         this.uploadTopic = this.uploadTopic.bind(this);
     }
 
+    // submitting new assignment!
     uploadTopic() {
         const {values: { title, description, topics, id}} = this.props;
         const data = {title, description, topics, id}
+        //console.log(data);
+        const token = localStorage.getItem('token');
         const options = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: 
+            {
+                'Content-Type': 'application/json',
+                Authorization: `Add ${token}`
+            },
             body: JSON.stringify(data),
         }
         fetch('/api/add', options)
             .then(response => response.json())
             .then(json => {
-                console.log(json);
-                this.props.uploadCheck(true);
+                //console.log(json);
+                if(json.msg === 'forbidden') this.props.uploadCheck(false);
+                else this.props.uploadCheck(true);
             })
             .catch(err => {
-                console.log(err);
+                //console.error(err);
                 this.props.uploadCheck(false);
             });
     }
