@@ -19,6 +19,8 @@
 
 # local database
 database.db
+usrdb.db
+logindb.db
 
 
 npm-debug.log*

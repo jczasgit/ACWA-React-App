@@ -87,7 +87,18 @@
     padding: 1em;
 }
 
-.holder {
-    font-size: 10px;
+.holder{
     opacity: 0.8;
+}
+
+@media screen and (max-width: 450px) {
+
+    .pHolder {
+        font-size: 8px;
+        text-align: center;
+    }
+
+    .holder {
+        opacity: 0.8;
+    }
 }

@@ -49,10 +49,13 @@ app.post('/api/usr/firstsetup', (req, res) => {
                 res.status(400).json({invalidMsg: 'UserId not found. Please contact Juan.'});
             } else {
                 if(result[0].userId === userId && result[0].firstLogin) 
-                {
-                    usrdb.update({userId: result[0].userId}, {$set: {username, password, firstLogin: false}}, (err, numOfUpdates) => console.log(numOfUpdates));
-                    usrdb.loadDatabase(); // reload updated db
-                    res.json({validMsg: 'reset complete'});
+                {   
+                    const pwdCombination = password + 'roseismywife';
+                    bcrypt.hash(pwdCombination, 10, (err, hashedPassword) => {
+                        usrdb.update({userId: result[0].userId}, {$set: {username, password: hashedPassword, firstLogin: false}}, (err, numOfUpdates) => console.log(numOfUpdates));
+                        usrdb.loadDatabase(); // reload updated db
+                        res.json({validMsg: 'reset complete'});
+                    })
                 }else {
                     res.status(400).json({invalidMsg: 'something went wrong...'});
                 }
@@ -74,26 +77,32 @@ app.post('/api/usr/login', (req, res) =>{
                     if(searchResult[0].firstLogin) { // if it is the first time login
                         res.status(200).json({firsttime: true, userId: searchResult[0].userId});
                     } else { // if it is not first time login...
-                        if(searchResult[0].password === data.password) { // if the passwords matched
-                            const tokenValue = {username: searchResult[0].username, loginTime: Date.now()}
-                            logindb.find({userId: searchResult[0].userId}, (err, logResult) =>{
-                                if(err) console.log(err);
-                                else {
-                                    if(logResult.length < 1) {
-                                        logindb.insert({userId: searchResult[0].userId, loginTime: tokenValue.loginTime});
-                                        logindb.loadDatabase();
-                                    } else {
-                                        logindb.update({userId: searchResult[0].userId}, {$set: {loginTime: tokenValue.loginTime}});
-                                        logindb.loadDatabase();
-                                    }
+                        const pwdCombination = data.password + 'roseismywife';
+                        bcrypt.compare(pwdCombination, searchResult[0].password, (err, matched) => {
+                            if(err) {res.status(400).json({invalidMsg: 'something went wrong...'})}
+                            else {
+                                if(matched) {
+                                    const tokenValue = {username: searchResult[0].username, loginTime: Date.now()}
+                                    logindb.find({userId: searchResult[0].userId}, (err, logResult) => {
+                                        if(err) console.log(err);
+                                        else {
+                                            if(logResult.length < 1) {
+                                                logindb.insert({userId: searchResult[0].userId, loginTime: tokenValue.loginTime});
+                                                logindb.loadDatabase();
+                                            } else {
+                                                logindb.update({userId: searchResult[0].userId}, {$set: {loginTime: tokenValue.loginTime}});
+                                                logindb.loadDatabase();
+                                            }
+                                        }
+                                    });
+                                    jwt.sign({user: tokenValue}, secretKey, {expiresIn: '7d'},(err, token) =>{
+                                        res.json({token});
+                                    });
+                                } else {
+                                    res.status(400).json({invalidMsg: 'invalid password'});
                                 }
-                            });
-                            jwt.sign({user: tokenValue}, secretKey, {expiresIn: '7d'},(err, token) =>{
-                                res.json({token});
-                            });
-                        } else {
-                            res.status(400).json({invalidMsg: 'invalid password'});
-                        }
+                            }
+                        })
                     }
                 } else {
                     res.status(400).json({invalidMsg: 'invalid username'});
