@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 const port = 3001; // change to 80 when deployed
 const Datastore = require('nedb');
 const secretKey = 'loverose4ever';
 const database = new Datastore({filename:'database.db', autoload: true});
 const usrdb = new Datastore({filename: 'usrdb.db', autoload: true});
 const logindb = new Datastore({filename: 'logindb.db', autoload: true});
-// app.use(express.static(__dirname + '/client/build', {dotfiles: 'allow'})); --> for deployment usage.
+//app.use(express.static(__dirname + '/client/build', {dotfiles: 'allow'}));
 app.use(express.json());
 
 // token format:
@@ -27,12 +28,22 @@ function verifyToken(req, res, next) {
     }
 }
 
+// validation of token
+app.post('/api/validation', verifyToken,(req, res) => {
+    jwt.verify(req.token, secretKey, (err, authData)=> {
+
+    });
+})
+
 // User register
 app.post('/api/usr/register', (req, res) =>{
     const data = req.body;
     data.createdDate = Date.now();
     data.firstLogin = true;
     data.name = data.username;
+    data.assignmentTaken = [];
+    data.assignmentOwned = [];
+    data.isTeacher = false;
     usrdb.insert(data);
     res.json({register: 'register'});
 });
@@ -49,13 +60,18 @@ app.post('/api/usr/firstsetup', (req, res) => {
                 res.status(400).json({invalidMsg: 'UserId not found. Please contact Juan.'});
             } else {
                 if(result[0].userId === userId && result[0].firstLogin) 
-                {   
-                    const pwdCombination = password + 'roseismywife';
-                    bcrypt.hash(pwdCombination, 10, (err, hashedPassword) => {
-                        usrdb.update({userId: result[0].userId}, {$set: {username, password: hashedPassword, firstLogin: false}}, (err, numOfUpdates) => console.log(numOfUpdates));
-                        usrdb.loadDatabase(); // reload updated db
-                        res.json({validMsg: 'reset complete'});
-                    })
+                {   usrdb.find({username}, (err, hits) => {
+                    if(hits.length >= 1) {
+                        res.status(400).json({invalidMsg: 'Please set a new username.'});
+                    } else if(hits.length < 1){
+                        const pwdCombination = password + 'roseismywife';
+                        bcrypt.hash(pwdCombination, 10, (err, hashedPassword) => {
+                            usrdb.update({userId: result[0].userId}, {$set: {username, password: hashedPassword, firstLogin: false}}, (err, numOfUpdates) => console.log(numOfUpdates));
+                            usrdb.loadDatabase(); // reload updated db
+                            res.json({validMsg: 'reset complete'});
+                        });
+                    }
+                })
                 }else {
                     res.status(400).json({invalidMsg: 'something went wrong...'});
                 }
@@ -82,7 +98,7 @@ app.post('/api/usr/login', (req, res) =>{
                             if(err) {res.status(400).json({invalidMsg: 'something went wrong...'})}
                             else {
                                 if(matched) {
-                                    const tokenValue = {username: searchResult[0].username, loginTime: Date.now()}
+                                    const tokenValue = {username: searchResult[0].username, userId: searchResult[0].userId,loginTime: Date.now()}
                                     logindb.find({userId: searchResult[0].userId}, (err, logResult) => {
                                         if(err) console.log(err);
                                         else {
@@ -96,7 +112,7 @@ app.post('/api/usr/login', (req, res) =>{
                                         }
                                     });
                                     jwt.sign({user: tokenValue}, secretKey, {expiresIn: '7d'},(err, token) =>{
-                                        res.json({token});
+                                        res.json({token, username: searchResult[0].username});
                                     });
                                 } else {
                                     res.status(400).json({invalidMsg: 'invalid password'});
@@ -124,49 +140,84 @@ app.post('/api/topicselect/:cellId/:topicId', verifyToken,(req, res) => {
             const cellId = req.params.cellId;
             const topicId = req.params.topicId;
             const topicsArray = [];
-            const {username, userId} = authData.user;
-            const name = [];
-            usrdb.find({username}, (err, result) => {
-                if(err) console.error(err);
-                if(result.length < 1) {
-                    console.log('not found');
-                } else {
-                    name.push(result[0].name);
-                }
-            })
+            const {username} = authData.user;
+            const userDetails = [];
+
             // finding the right assignment.
             database.find({id: cellId}, (err,data) => {
                 if(err) console.error(err);
-                data[0].topics.forEach(topic => {
-                    if(topic.id !== topicId) topicsArray.push(topic);
-                    else {
-                        topic.taken = true;
-                        topic.holder = name[0];// updating topics[i].taken
-                        topic.holderId = userId;
-                        topicsArray.push(topic);
+
+                // updating user assignment details.
+                usrdb.find({username}, (err, result) => {
+                    if(err) console.error(err);
+                    if(result.length < 1) {
+                        console.log('not found');
+                    } else {
+                        userDetails.push({name: result[0].name, userId: result[0].userId});
+                        data[0].topics.forEach(topic => {
+                            if(topic.id !== topicId) topicsArray.push(topic);
+                            else {
+                                if(topic.taken) topicsArray.push(topic);
+                                else {
+                                    topic.taken = true;
+                                    topic.holder = userDetails[0].name;// updating topics[i].taken
+                                    topic.holderId = userDetails[0].userId;
+                                    topicsArray.push(topic);
+                                    const assignmentDetails = result[0].assignmentTaken;
+                                    assignmentDetails.push({assignmentId: cellId, topicId, obtainedAt: Date.now()})
+                                    usrdb.update({username}, {$set: {assignmentTaken: assignmentDetails}}, (err, numOfUpdates) => console.log(numOfUpdates));
+                                }
+                            }
+                        });
+
+                        // updating assignment data.
+                        database.update({id: cellId}, {$set: {topics: topicsArray}}, {}, (err, numOfUpdates) => {
+                            if(err) console.error(err);
+                            console.log(numOfUpdates);
+                            // sending back new data.
+                            database.find({}, (err, data) => {
+                                if(err) console.error(err);
+                                res.json(data.sort((a,b) => b.timestamp-a.timestamp));
+                            });
+                        });
                     }
                 });
-            });
-
-            // updating assignment data.
-            database.update({id: cellId}, {$set: {topics: topicsArray}}, {}, (err, numOfUpdates) => {
-                if(err) console.error(err);
-                console.log(numOfUpdates);
-            });
-
-            database.loadDatabase();  // reload db, just in case.
-            
-            // sending back new data.
-            database.find({}, (err, data) => {
-                if(err) console.error(err);
-                res.json(data.sort((a,b) => b.timestamp-a.timestamp));
             });
         }
     });
 });
 
+// Handle Refresh data
+app.get('/api/get/refresh', verifyToken, (req, res) => [
+    
+]);
+
+// Get user assignment details
+app.get('/api/get/userdetails/assignments', verifyToken, (req, res) => {
+    jwt.verify(req.token, secretKey, (err, authData) => {
+        if(err) res.status(400).json({invalidMsg: 'forbidden'});
+        else {
+            const {user} = authData;
+            usrdb.find({userId: user.userId}, (err, result) => {
+                if(err) res.status(400).json({invalidMsg: 'error'});
+                else {
+                    if(result.length < 1) res.status(400).json({invalidMsg: 'not found.'});
+                    else {
+                        const {assignmentTaken} = result[0];
+                        if(assignmentTaken.length < 1) res.json({assignmentTaken: []})
+                        else if(assignmentTaken === 'undefined') res.status(400).json({assignmentTaken: []});
+                        else {
+                            res.json({assignmentTaken})
+                        }
+                    }
+                }
+            });
+        }
+    })
+});
+
 // First fetch of all the assignments.
-app.post('/api/get/assignments/all', verifyToken,(req, res) => {
+app.get('/api/get/assignments/all', verifyToken,(req, res) => {
     jwt.verify(req.token, secretKey, (err, authData) => {
         if(err) res.status(403).json({msg: 'forbidden'});
         else {
@@ -179,6 +230,38 @@ app.post('/api/get/assignments/all', verifyToken,(req, res) => {
     });
 });
 
+// Uploading attached files
+app.post('/api/uploads/:assignmentId', verifyToken, (req, res) => {
+    jwt.verify(req.token, secretKey, (err, authData) => {
+        if(req.files === null) res.status(400).json({msg: 'forbidden'});
+        else {
+            console.log(req);
+            res.status(200);
+        }
+        /* if(err) res.status.json({msg: 'forbidden'});
+        else {
+            const assignmentId = req.params.assignmentId;
+            if(req.files === null) {
+                return res.status(400).json({invalidMsg: 'empty files.'});
+            }else {
+                fs.mkdir(`${__dirname}/uploads/${assignmentId}/`, {recursive: true}, (err) => {
+                    if(err) throw err;
+                });
+                const attachedFile = req.files.attachedFile;
+
+                attachedFile.mv(`${__dirname}/uploads/${assignmentId}/${attachedFile.name}`, (err) => {
+                    if(err) {
+                        console.error(err);
+                        return res.status(500).json({invalidMsg: `${err}`});
+                    } else { 
+                        res.json({validMsg: 'files uploaded.'});
+                    }
+                });
+            }
+        } */
+    });
+});
+
 
 // Inserting asignment data uploaded by user.
 app.post('/api/add', verifyToken,(req, res) => {
@@ -188,7 +271,17 @@ app.post('/api/add', verifyToken,(req, res) => {
             const data = req.body;
             const timestamp = Date.now();
             data.timestamp = timestamp;
-            data.by = authData.username;
+            usrdb.find({userId: authData.user.userId}, (err, hits)=>
+            {
+                if(err) res.status(400).json({msg: 'forbidden'});
+                else {
+                    const AR = hits[0].assignmentOwned;
+                    AR.push({id: data.id});
+                    usrdb.update({userId: hits[0].userId}, {$set: {assignmentOwned: AR}}, (err, numOfUpdates) => console.log(numOfUpdates));
+                    data.owner = hits[0].name;
+                }
+            });
+            data.attachedFilePaths = [];
             database.insert(data);
             res.json({msg: "success", timestamp});
         }

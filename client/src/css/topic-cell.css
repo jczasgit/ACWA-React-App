@@ -47,6 +47,12 @@
     text-align: left;
 }
 
+.dateStyle span {
+    opacity: 1;
+    font-weight: 500;
+    font-size: 0.6rem;
+}
+
 .aStyle {
     text-decoration:none;
     color:#e91e63;

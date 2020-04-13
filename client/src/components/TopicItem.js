@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 
 export default class TopicItem extends Component {
+    _isMounted;
     constructor(props){
         super(props);
         this.state = {
@@ -11,6 +12,14 @@ export default class TopicItem extends Component {
 
         this.isMultiChoice = this.isMultiChoice.bind(this);
         this.isSingleChoice = this.isSingleChoice.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount()  {
+        this._isMounted = false;
     }
 
     isSingleChoice() {
@@ -34,16 +43,25 @@ export default class TopicItem extends Component {
     }
 
     handleCheckBoxChange = e => {
-        const {multiChoice} = this.props; 
-        if(multiChoice) {
-            this.isMultiChoice();
+        if(this.props.selectable) {
+            const {multiChoice} = this.props; 
+            if(multiChoice) {
+                this.isMultiChoice();
+            } else {
+                this.isSingleChoice();
+            }
         } else {
-            this.isSingleChoice();
+            return;
         }
     }
 
-    render() {
-
+    render() { 
+        /* const {holders} = this.props;
+        const nameHolders = holders.map(holder => {
+            return (
+                <p>{holder}</p>
+            )
+        }) */
         return (
             <div className='topic-container'>
             <p className='pTopic'>{this.props.content}</p>

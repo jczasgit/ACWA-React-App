@@ -39,7 +39,7 @@ export class App extends Component {
     } else if(status === 'confirm'){
       const token = localStorage.getItem('token');
       if(token) {
-        this.setState({isLogged: 'token'})
+        this.setState({isLogged: 'token'});
       }
     }
   }

@@ -7,13 +7,13 @@ import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
 import '../css/addTopicFinish.css';
 
 export default class AddTopicFinish extends Component {
-    componentDidMount() {
+/*     componentDidMount() {
         setTimeout(() => {
             clearTimeout();
             this.props.goBack();
         }, 4000);
     }
-
+ */
     render() {
         
         const {uploaded} = this.props;

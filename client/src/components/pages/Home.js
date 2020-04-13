@@ -4,6 +4,7 @@ import TopicCell from '../TopicCell';
 import Grid from '@material-ui/core/Grid';
 
 class Home extends Component {
+    autoRefresh;
     _isMounted = false;
     constructor(props) {
         super(props);
@@ -20,6 +21,11 @@ class Home extends Component {
         else this.getAssignments();
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+        clearTimeout(this.autoRefresh);
+    }
+
     refreshTopics = dataArray => {
         if(this._isMounted) {
         this.setState({assignments: dataArray});
@@ -29,7 +35,7 @@ class Home extends Component {
     getAssignments() {
         const token = localStorage.getItem('token');
         const options = {
-            method: 'POST',
+            method: 'GET',
             headers: {Authorization: `Bearer ${token}`}
         }
         fetch('/api/get/assignments/all', options)
@@ -42,16 +48,15 @@ class Home extends Component {
                         }
                     }
                     else {
-                        if(this._isMounted) this.setState({assignments: data});
+                        if(this._isMounted){ 
+                            this.setState({assignments: data});
+                            this.autoRefresh = setTimeout(this.getAssignments.bind(this), 1000);
+                        }
                     }
                 })
             .catch(err => {
                 console.log(err);
             });
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
     }
 
     render() {

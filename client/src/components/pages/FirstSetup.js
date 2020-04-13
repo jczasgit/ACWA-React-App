@@ -37,6 +37,7 @@ export default class FirstSetup extends Component {
             alert('Username or Password must be longer than 6 characters!');
             return;
         } else {
+            if(this._isMounted) this.setState({invalidMsg: ''});
             const {username, password} = this.state;
             const data = {username, password, userId: this.props.userId}
             const options = {

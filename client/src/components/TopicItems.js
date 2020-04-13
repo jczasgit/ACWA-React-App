@@ -17,26 +17,44 @@ export default class TopicItems extends Component {
             submitted: false,
             multiChoice: false,
             controlledSwitch: false,
+            selectable: true,
         }
 
         this.toggleSelection = this.toggleSelection.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.controlled = this.controlled.bind(this);
         this.uncontrolled = this.uncontrolled.bind(this);
+        this.checkForTakenTopicByUser = this.checkForTakenTopicByUser.bind(this);
     }
 
     componentDidMount() {
         this._isMounted = true;
         this.setState({isMounted: true});
+        const token = localStorage.getItem('token');
+        this.checkForTakenTopicByUser(token);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
     }
 
+    async checkForTakenTopicByUser(token) {
+        if(token) {
+            const response = await fetch('/api/get/userdetails/assignments', {headers: {Authorization: `Bearer ${token}`}});
+            const {assignmentTaken} = await response.json();
+            const currentAssignmentId = this.props.assignment.id;
+            assignmentTaken.forEach(assignmentData => {
+                const {assignmentId} = assignmentData;
+                if(assignmentId === currentAssignmentId) {
+                    this.setState({selectable: false})
+                }
+           });
+        }
+    }
+
     toggleSelection = selectedTopicId => {
         // toggle the value ("topicId" or <empty string>)
-        this.setState({selectedTopicId});
+        if(this._isMounted) this.setState({selectedTopicId});
     }
     
     // submitting topic selection
@@ -88,11 +106,10 @@ export default class TopicItems extends Component {
         } else {
             this.uncontrolled();
         }
-        
     }
 
     render() {
-        const {title, description, timestamp, topics} = this.props.assignment;
+        const {title, description, timestamp, topics, dueDate} = this.props.assignment;
         const date = new Date(timestamp).toDateString();
         return (
             <div className='divStyle'>
@@ -101,7 +118,7 @@ export default class TopicItems extends Component {
                         <div className="pStyle description">{description}</div>
                     </div>
                     <div style={{display: 'flex' ,width: '80%', justifyContent: 'space-around', borderTop: '1px dashed #e91e63', marginTop: '10px', paddingTop: '10px'}}>
-                        <p className='dateStyle'>{date}</p>
+                        <p className='dateStyle'><span>Published on:</span> {date} <br/> <span>Due Date:</span> {dueDate}</p>
                         <p className='aStyle'>
                         <Switch
                             checked={this.state.checkS}
@@ -118,7 +135,7 @@ export default class TopicItems extends Component {
                     </div>
                     <div className='topics-container'>
                         {topics.map(topic => {
-                            const {content, id, taken, holder} = topic;
+                            const {content, id, taken, holder, limit} = topic;
                             return(
                                 <TopicItem
                                 multiChoice={this.state.multiChoice} 
@@ -126,6 +143,8 @@ export default class TopicItems extends Component {
                                 content={content} 
                                 topicId={id}
                                 taken={taken}
+                                selectable={this.state.selectable}
+                                limit={limit}
                                 holder={holder}  
                                 selectedTopicId={this.state.selectedTopicId}
                                 toggleSelection={this.toggleSelection}/>

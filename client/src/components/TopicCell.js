@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import TopicItems from './TopicItems';
 import '../css/topic-cell.css';
 
-export default class TopicCell extends Component {
-
+export default class TopicCell extends Component {  
+    _isMounted;
     constructor(props) {
         super(props);
         this.state = {
@@ -11,6 +11,23 @@ export default class TopicCell extends Component {
             openedId: '',
         }
         this.opened = this.opened.bind(this);
+        this.setSelectable = this.setSelectable.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    setSelectable(bool) {
+        if(bool === false) {
+            if(this._isMounted) this.setState({selectable: bool});
+        } else {
+            return;
+        }
     }
 
     opened = values => {

@@ -39,7 +39,7 @@ export default class Login extends Component {
                 </Grid>
                 <Grid item container spacing={3}>
                     <Grid item><Button variant='contained' color='primary' onClick={this.props.onLogin}>Log In</Button></Grid>  
-                    <Grid item><Button size='small' color='primary' onClick={this.props.onRegister}>Register<ArrowForwardIosIcon/></Button></Grid>
+                    <Grid item><Button size='small' color='primary' disabled={false} onClick={this.props.onRegister}>Register<ArrowForwardIosIcon/></Button></Grid>
                 </Grid>
             </Grid>
         )

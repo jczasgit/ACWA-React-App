@@ -11,8 +11,8 @@ export default class AddTopicConfirmed extends Component {
 
     // submitting new assignment!
     uploadTopic() {
-        const {values: { title, description, topics, id}} = this.props;
-        const data = {title, description, topics, id}
+        const {values: { title, description, topics, id, dueDate, attachedFiles}} = this.props;
+        const data = {title, description, topics, id, dueDate, multiChoice: false, choiceLimit: false}
         //console.log(data);
         const token = localStorage.getItem('token');
         const options = {
@@ -24,17 +24,36 @@ export default class AddTopicConfirmed extends Component {
             },
             body: JSON.stringify(data),
         }
+
+        if(attachedFiles.length > 0) {
+            console.log('uploading files')
+            console.log(attachedFiles);
+            const formData = new FormData();
+            for (const file of attachedFiles) {
+                formData.append('attachedFile', file);
+            }
+            console.log(formData);
+            fetch(`/api/uploads/${data.id}`, {method: 'POST', body: formData, headers: {Authorization: `Add ${token}`}})
+                .then(response => response.json())
+                .then(json => {
+                    if(json.msg === 'forbidden') this.props.uploadCheck(false);
+                    else this.props.uploadCheck(true);
+                })
+                .catch(err => this.props.uploadCheck(false));
+        }
+
         fetch('/api/add', options)
             .then(response => response.json())
             .then(json => {
                 //console.log(json);
                 if(json.msg === 'forbidden') this.props.uploadCheck(false);
-                else this.props.uploadCheck(true);
+                else this.props.uploadCheck(true)
             })
             .catch(err => {
                 //console.error(err);
                 this.props.uploadCheck(false);
             });
+        this.props.nextStep();
     }
 
     continue = e => {
@@ -51,17 +70,21 @@ export default class AddTopicConfirmed extends Component {
     render() {
         
 
-        const {values: { title, description, topics}} = this.props;
+        const {values: { title, description, topics, dueDate, attachedFiles}} = this.props;
         const allTopics = topics.map(topic => {
             const {content, id} = topic;
             return (
             <p key={id} style={useStyle.pStyleTopics}>{content}</p>
             );
         });
-
+        const allFiles = attachedFiles.map(file => {
+            const {name} = file;
+            return (
+                <p key={name} style={useStyle.pStyleTopics}>{name}</p>
+            )
+        });
         return (
-            <React.Fragment>
-                
+            <React.Fragment>  
                 <Grid container spacing={2}>
                     <Grid item container>
                         <Grid item xs={2} lg={4}></Grid>
@@ -81,6 +104,16 @@ export default class AddTopicConfirmed extends Component {
                                         {allTopics}
                                     </div>
                                 </div>
+                                <div style={{borderBottom: '3px solid #e91e63'}}>
+                                    <h3 style={useStyle.h3Style}>Due Date</h3>
+                                    <p style={useStyle.pStyleTitle}>{dueDate}</p>
+                                </div>
+                                <div style={{borderBottom: '3px solid #e91e63'}}>
+                                    <h3 style={useStyle.h3Style}>Attached Files</h3>
+                                    <div style={{borderTop: '2px dashed #e91e63'}}>
+                                        {allFiles}
+                                    </div>
+                                </div>
                             </div>
                         </Grid>
                         <Grid item xs={2} lg={4}></Grid>
@@ -94,7 +127,7 @@ export default class AddTopicConfirmed extends Component {
                         </Grid>
                         <Grid item xs={3} lg={2}>
                             <Grid item container justify='center' alignItems='center'>
-                                <Button color='primary' variant='contained' size='small' onClick={this.continue}>Confrim</Button>
+                                <Button color='primary' variant='contained' size='small' onClick={this.uploadTopic}>Confrim</Button>
                             </Grid>
                         </Grid>
                         <Grid item xs={3} lg={4}></Grid>

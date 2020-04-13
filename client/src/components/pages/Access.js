@@ -28,12 +28,20 @@ export default class Access extends Component {
             if(this._isMounted) this.setState({stage: 0, name: '',username: '',password: '', invalidMsg: ''});
             return;
         } else {
-            const {username, password} = this.state;
-            const data = {username, password, userId: uuidv4()};
-            fetch('/api/usr/register', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)})
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(err => console.error(err));
+            const {username, password, name} = this.state;
+            const data = {username, password, userId: uuidv4(), name};
+            if(!username || !password || !name) {
+                if(this._isMounted) this.setState({invalidMsg: 'Blanks not allowed.'});
+                return;
+            }else if(username.length < 6 || password.length < 6) {
+                if(this._isMounted) this.setState({invalidMsg: 'Username or Password must > 6 characters.'});
+                return;
+            } else {
+                fetch('/api/usr/register', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)})
+                    .then(response => response.json())
+                    .then(data => {console.log(data); alert('Register! Go back to login. Sorry for inconvinience...');})
+                    .catch(err => console.error(err));
+            }
         }
     }
 
@@ -42,7 +50,7 @@ export default class Access extends Component {
         const {username, password} = this.state;
         const data = {username, password};
         if(!username || !password) {
-            if(this._isMounted) this.setState({invalidMsg: 'not blanks allowed'});           
+            if(this._isMounted) this.setState({invalidMsg: 'Blanks not allowed'});           
         } else {
             if(this._isMounted) this.setState({invalidMsg: ''});
             fetch('/api/usr/login', {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)})
@@ -58,6 +66,7 @@ export default class Access extends Component {
                 } 
                 else {
                     localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
                     this.props.confirmLoggin('logged');
                     this.props.history.push('/');
                 }
@@ -83,12 +92,12 @@ export default class Access extends Component {
     render() {
         return (
             <div className="form-wrapper">
-                  <div className='form-container'>
-        {this.state.stage ? 
-        <Login onLogin={this.onLogin} onRegister={this.onRegister} handleChange={this.handleChange} username={this.state.username} password={this.state.password} invalidMsg={this.state.invalidMsg} />
-        :
-        <Register onRegister={this.onRegister} handleChange={this.handleChange} username={this.state.username} password={this.state.password} backToLogin={this.backToLogin}/>
-        }           
+                <div className='form-container'>
+                    {this.state.stage ? 
+                    <Login onLogin={this.onLogin} onRegister={this.onRegister} handleChange={this.handleChange} username={this.state.username} password={this.state.password} invalidMsg={this.state.invalidMsg} />
+                    :
+                    <Register onRegister={this.onRegister} handleChange={this.handleChange} username={this.state.username} password={this.state.password} backToLogin={this.backToLogin} invalidMsg={this.state.invalidMsg}/>
+                    }           
                 </div>
             </div>
         )
