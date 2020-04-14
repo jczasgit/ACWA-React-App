@@ -6,6 +6,7 @@ import FormDescription from '../FormDescription';
 import FormAddTopics from '../FormAddTopics';
 import AddTopicConfirmed from '../AddTopicConfirmed';
 import AddTopicFinish from '../AddTopicFinish';
+import FormDetails from '../FormDetails';
 
 export default class AddTopic extends Component {
     constructor(props) {
@@ -14,12 +15,13 @@ export default class AddTopic extends Component {
             id: uuidv4(),
             title: '',
             description: '',
+            dueDate: '2020-04-01',
             step: 1,
             topics: [],
+            attachedFiles: [],
             uploaded: false,
         }
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
         this.addTopicField = this.addTopicField.bind(this);
@@ -38,36 +40,30 @@ export default class AddTopic extends Component {
         this.setState({step: step-1});
     }
 
-    handleChange = input => e => {
-        this.setState({[input]: e.target.value}); //change value according to the input tag.
+    handleDateChange = e => {
+        this.setState({dueDate: e.target.value}); // change date value
     }
 
-    handleSubmit = e => {
-        e.preventDefault();
-        this.setState({id: uuidv4()});
-        const data = this.state;
-        const options = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data)
-        }
-        fetch('/api/add', options)
-            .then(response => response.json())
-            .then(json => console.log(json))
-            .catch(err => console.log(err));
+    handleChange = input => e => {
+        this.setState({[input]: e.target.value}); //change value according to the input tag.
     }
 
     addTopicField(content) {
         if(content.length === 0) {
             return;
         }
-        const newTopic = {id: uuidv4(), content:content, taken: false};
+        const newTopic = {id: uuidv4(), content:content, taken: false, holders: [], holder: 'Not taken, yet.', limit: false};
         this.setState({topics: [...this.state.topics, newTopic]});
     }
 
     delTopicField = (id) => {
         const newTopics = [...this.state.topics.filter(topic => topic.id !== id)];
         this.setState({ topics: newTopics });
+    }
+
+    delAttachedFile = (name) => {
+        const newFiles = [...this.state.attachedFiles.filter(file => file.name !== name)];
+        this.setState({attachedFiles: newFiles});
     }
 
     goBack = e => {
@@ -79,14 +75,22 @@ export default class AddTopic extends Component {
         if(bool) {
             this.setState({uploaded: true})
         } else {
-            return;
+            this.setState({uploaded: false});
         }
+    }
+
+    handleFiles = e => {
+        const selectedFiles = []
+        for(let i=0;i<e.target.files.length;i++) {
+            selectedFiles.push(e.target.files[i])
+        }
+        this.setState({attachedFiles: selectedFiles});
     }
 
     render() {
         const {step} = this.state;
-        const {id, title, description, topics} = this.state;
-        const values = {id, title, description, topics};
+        const {id, title, description, topics, dueDate, attachedFiles} = this.state;
+        const values = {id, title, description, topics, dueDate, attachedFiles};
 
         switch(step) {
             case 1:
@@ -111,13 +115,20 @@ export default class AddTopic extends Component {
                     </React.Fragment>
                 )
             case 4:
+                    return(
+                        <React.Fragment>
+                            <Header/>
+                            <FormDetails delAttachedFile={this.delAttachedFile} handleFiles={this.handleFiles} nextStep={this.nextStep} prevStep={this.prevStep} values={values} handleDateChange={this.handleDateChange} attachedFiles={this.state.attachedFiles}/>
+                        </React.Fragment>
+                    )
+            case 5:
                 return (
                     <React.Fragment>
                         <Header />
                         <AddTopicConfirmed values={values} nextStep={this.nextStep} prevStep={this.prevStep} uploadCheck={this.uploadCheck}/>
                     </React.Fragment>
                 )
-            case 5:
+            case 6:
                 return (
                     <React.Fragment>
                         <Header />

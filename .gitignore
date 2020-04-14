@@ -6,9 +6,12 @@
 
 # testing
 /coverage
-
+test.js
 #production
 /client/build
+
+#uploads
+/uploads
 
 # misc
 .DS_Store
@@ -19,6 +22,8 @@
 
 # local database
 database.db
+usrdb.db
+logindb.db
 
 
 npm-debug.log*

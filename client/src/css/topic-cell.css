@@ -13,7 +13,7 @@
 
 .h2Style {
     color: #212121;
-    font-size: 1.2em;
+    font-size: 1.3em;
     overflow-wrap: break-word;
     text-align: center;
 }
@@ -36,15 +36,21 @@
 .pStyle {
     color: #212121;
     text-align: left;
-    font-size: 0.7em;
+    font-size: 1em;
     overflow-wrap: break-word;
 }
 
 .dateStyle {
     color: #212121;
     opacity: 0.8;
-    font-size: 0.5em;
+    font-size: 0.7em;
     text-align: left;
+}
+
+.dateStyle span {
+    opacity: 1;
+    font-weight: 500;
+    font-size: 0.8rem;
 }
 
 .aStyle {
@@ -67,12 +73,93 @@
     width: 100%;
     margin: 1em auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .pTopic {
     color: #212121;
     text-align: left;
+    font-size: 0.8em;
+    flex: 1;
+    overflow-wrap: break-word;
+    padding: 1em;
+}
+
+.pHolder {
+    color: #212121;
+    text-align: left;
     font-size: 0.7em;
     overflow-wrap: break-word;
+    padding: 1em;
+}
+
+.holder{
+    opacity: 0.8;
+}
+
+.attachedFile {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    overflow-wrap: anywhere;
+    position: relative;
+    margin-bottom: 2em;
+    margin-top: 2em;
+    border-bottom: dashed #212121 1px;
+}
+
+.downloadIcon {
+    position: absolute;
+    right: 0;
+}
+
+.attachedFile div {
+    display: block;
+    font-size: 0.8em;
+    overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 450px) {
+    .h2Style{
+        font-size: 1.2em;
+    }
+
+    .pStyle {
+        font-size: 0.7em;
+    }
+
+    .pTopic {
+        font-size: 0.65em;
+    }
+
+    .pHolder {
+        font-size: 8px;
+        text-align: center;
+    }
+
+    .holder {
+        opacity: 0.8;
+    }
+
+    .attachedFile {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        overflow-wrap: anywhere;
+        margin-bottom: 0.5em;
+        margin-top: 0;
+        border-bottom: #212121 dashed 1px;
+    }
+    
+    .attachedFile div {
+        display: block;
+        font-size: 0.7em;
+        overflow-wrap: anywhere;
+    }
+
+    .downloadIcon {
+        position: relative;
+        right: 0;
+    }
 }

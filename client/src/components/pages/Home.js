@@ -2,35 +2,67 @@ import React, { Component } from 'react';
 import Header from '../Header';
 import TopicCell from '../TopicCell';
 import Grid from '@material-ui/core/Grid';
+import SocketIOClient from 'socket.io-client';
 
 class Home extends Component {
+    //autoRefresh;
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
             assignments: [],
+            endpoint: 'http://localhost:3001/' // change endpoint based on your need.
         }
         this.getAssignments = this.getAssignments.bind(this);
         this.refreshTopics = this.refreshTopics.bind(this);
     }
 
     componentDidMount() {
-        this.getAssignments();
+        this._isMounted = true;
+        const {endpoint} = this.state;
+        if(!this.props.isLogged) this.props.history.push('/access');
+        else this.getAssignments();
+        const socket = SocketIOClient(endpoint);
+        socket.on('newData', (data) => {
+            this.refreshTopics(data);
+        });
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+        clearTimeout(this.autoRefresh);
     }
 
     refreshTopics = dataArray => {
+        if(this._isMounted) {
         this.setState({assignments: dataArray});
+        }
     }
 
     getAssignments() {
-        fetch('/api/get/assignments/all')
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'GET',
+            headers: {Authorization: `Bearer ${token}`}
+        }
+        fetch('/api/get/assignments/all', options)
             .then(response => response.json())
             .then(data => {
-                //data.sort((a,b)=>b.timestamp-a.timestamp);
-                this.setState({assignments: data});
-            })
+                    if(data.msg) {
+                        if(this._isMounted) {
+                            this.props.reLogin();
+                            this.props.history.push('/access');
+                        }
+                    }
+                    else {
+                        if(this._isMounted){ 
+                            this.setState({assignments: data});
+                            //this.autoRefresh = setTimeout(this.getAssignments.bind(this), 1500);
+                        }
+                    }
+                })
             .catch(err => {
-                console.error(`Request failed. Message = ${err}`);
-                return {error: {message: 'Request failed.'}};
+                console.log(err);
             });
     }
 
@@ -42,13 +74,13 @@ class Home extends Component {
                     <Header/>
                 </Grid>
                 <Grid item container justify='center' alignItems='center'>
-                    <Grid item xs={0} lg={3}></Grid>
+                    <Grid item xs={"auto"} lg={3}></Grid>
                     <Grid item xs={12} lg={6}>
                         <Grid item container justify='center' alignItems='center'>
                             <TopicCell assignments={this.state.assignments} refreshTopics={this.refreshTopics}/>
                         </Grid>
                     </Grid>
-                    <Grid item xs={0} lg={3}></Grid>
+                    <Grid item xs={"auto"} lg={3}></Grid>
                 </Grid>
             </Grid>
         </React.Fragment>
