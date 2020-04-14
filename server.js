@@ -73,7 +73,10 @@ function verifyToken(req, res, next) {
 // validation of token
 app.post('/api/validation', verifyToken,(req, res) => {
     jwt.verify(req.token, secretKey, (err, authData)=> {
-
+        if(err) res.status(403).json({msg: 'forbidden'});
+        else {
+            res.status(200).json({msg: 'valid', userId: authData.user.userId});
+        }
     });
 })
 
@@ -287,11 +290,6 @@ app.post('/api/topicselect/:cellId/:topicId', verifyToken,(req, res) => {
         }
     });
 });
-
-// Handle Refresh data
-app.get('/api/get/refresh', verifyToken, (req, res) => [
-    
-]);
 
 // Get user assignment details
 app.get('/api/get/userdetails/assignments', verifyToken, (req, res) => {
