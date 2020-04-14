@@ -32,14 +32,21 @@ export class App extends Component {
     this.setState({userId});
   }
 
-  confirmLoggin(status) {
+  async confirmLoggin(status) {
     if(status === 'logged') {
       this.setState({isLogged: status});
       return;
     } else if(status === 'confirm'){
       const token = localStorage.getItem('token');
       if(token) {
-        this.setState({isLogged: 'token'});
+        const response = await fetch('/api/validation', {method: 'POST', headers: {Authorization: `Bearer ${token}`}});
+        const json = await response.json();
+        if(json.msg === 'valid') {
+          localStorage.setItem('userId', json.userId);
+          this.setState({isLogged: 'token'});
+        } else if(json.msg === 'forbidden') {
+          this.setState({isLogged: ''});
+        }
       }
     }
   }

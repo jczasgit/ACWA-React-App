@@ -22,9 +22,8 @@ test.js
 
 # local database
 database.db
-usrdb.db
 logindb.db
-
+usrdb.db
 
 npm-debug.log*
 yarn-debug.log*

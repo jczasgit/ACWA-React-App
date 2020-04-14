@@ -57,7 +57,6 @@ class Home extends Component {
                     else {
                         if(this._isMounted){ 
                             this.setState({assignments: data});
-                            //this.autoRefresh = setTimeout(this.getAssignments.bind(this), 1500);
                         }
                     }
                 })
