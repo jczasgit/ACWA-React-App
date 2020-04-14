@@ -1,7 +1,8 @@
 {
   "name": "acwa-app",
-  "version": "2.1.0",
   "description": "Assignment app for teachers and students.",
+  "version": "2.1.0",
+  "description": "ACWA APP Server testing",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
