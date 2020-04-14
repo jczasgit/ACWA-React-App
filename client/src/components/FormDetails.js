@@ -58,7 +58,7 @@ export default class FormDetails extends Component {
                                 <p style={{opacity: '0.6', fontSize:'0.8em'}}>optional</p>
                                 <div>
                                     <input id='file-input' className='file-input' type="file" multiple onChange={this.props.handleFiles}/>
-                                    <Button color='secondary' disabled variant='contained' size='small' onClick={this.chooseFile}>Choose File/s</Button>
+                                    <Button color='secondary' disabled={false} variant='contained' size='small' onClick={this.chooseFile}>Choose File/s</Button>
                                 </div>
                                 <AttachedFilesList attachedFiles={this.props.attachedFiles} delAttachedFile={this.props.delAttachedFile}/>
                             </Grid>

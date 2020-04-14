@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
+import CancelIcon from '@material-ui/icons/Cancel';
+import IconButton from '@material-ui/core/IconButton';
 
 export default class TopicItem extends Component {
     _isMounted;
@@ -8,6 +10,7 @@ export default class TopicItem extends Component {
         this.state = {
             checkB: false,
             selected: false,
+            holderId: this.props.holderId,
         }
 
         this.isMultiChoice = this.isMultiChoice.bind(this);
@@ -54,27 +57,37 @@ export default class TopicItem extends Component {
             return;
         }
     }
+    cancelTopicSelection = async (holderId, topicId) => {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/topicremove/${holderId}/${topicId}`, {method: 'POST', headers: {Authorization: `Bearer ${token}`}, body: JSON.stringify({client: 'removetopic'})});
+        const json = await response.json();
+        if(json.validMsg === 'successful') {
+            if(this._isMounted) {
+                this.setState({checkB: false, selected: false});
+                this.props.resetStateForRemoval();
+            }
+        }
+    }
 
     render() { 
-        /* const {holders} = this.props;
-        const nameHolders = holders.map(holder => {
-            return (
-                <p>{holder}</p>
-            )
-        }) */
+        const userId = localStorage.getItem('userId');
         return (
             <div className='topic-container'>
             <p className='pTopic'>{this.props.content}</p>
-            <p className='pHolder'>Taken by: <span className='holder'>{this.props.holder}</span></p>
+            <p className='pHolder'>Taken by: <br/> <span className='holder'>{this.props.holder}</span></p>
             <span>
-            <Checkbox
+            {!this.props.selectable && this.props.holderId === userId ?
+                <IconButton onClick={ () => this.cancelTopicSelection(this.props.holderId, this.props.topicId)}><CancelIcon color='primary'/></IconButton>
+            :
+                <Checkbox
                 className='checkbox'
                 disabled={this.props.taken}
                 checked={this.props.taken ? true : this.state.checkB}
                 onChange={this.handleCheckBoxChange}
                 inputProps={{ 'aria-label': 'primary checkbox' }}
                 color='primary'
-            />
+                />
+            }
             </span>
         </div>
         )

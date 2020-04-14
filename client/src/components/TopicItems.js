@@ -4,6 +4,7 @@ import Switch from '@material-ui/core/Switch';
 import TopicItem from './TopicItem';
 import {Grid ,Button} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
+import AttachedFiles from './AttachedFiles';
 
 export default class TopicItems extends Component {
     _isMounted = false;
@@ -25,6 +26,7 @@ export default class TopicItems extends Component {
         this.controlled = this.controlled.bind(this);
         this.uncontrolled = this.uncontrolled.bind(this);
         this.checkForTakenTopicByUser = this.checkForTakenTopicByUser.bind(this);
+        this.resetStateForRemoval = this.resetStateForRemoval.bind(this);
     }
 
     componentDidMount() {
@@ -38,17 +40,34 @@ export default class TopicItems extends Component {
         this._isMounted = false;
     }
 
+    resetStateForRemoval() {
+        if(this._isMounted) {
+            this.setState({selectable: true,selectedTopicId: ''});
+        }
+    }
+
     async checkForTakenTopicByUser(token) {
         if(token) {
             const response = await fetch('/api/get/userdetails/assignments', {headers: {Authorization: `Bearer ${token}`}});
             const {assignmentTaken} = await response.json();
             const currentAssignmentId = this.props.assignment.id;
-            assignmentTaken.forEach(assignmentData => {
-                const {assignmentId} = assignmentData;
-                if(assignmentId === currentAssignmentId) {
-                    this.setState({selectable: false})
-                }
-           });
+            if(assignmentTaken !== 'undefined') {
+                assignmentTaken.forEach(assignmentData => {
+                    const {assignmentId} = assignmentData;
+                    if(assignmentId === currentAssignmentId) {
+                        this.setState({selectable: false})
+                    }
+               });
+            }
+        }
+    }
+
+    toggleCheckBox(string) {
+        const {checkB, selected} = this.state;
+        if(string === 'equal') {
+            this.setState({checkB:!checkB, selected:!selected});
+        } else if(string === 'unselected') {
+            this.setState({checkB:!checkB, selected:!selected});
         }
     }
 
@@ -69,11 +88,21 @@ export default class TopicItems extends Component {
             fetch(`/api/topicselect/${cellId}/${selectedTopicId}`, {method: 'POST', headers: {Authorization: `Bearer ${token}`}})
                 .then(response => response.json())
                 .then(data => {
-                    this.props.refreshTopics(data);
-                    this.setState({submitted: true});
+                    if(data.msg === 'taken') {
+                        this.resetStateForRemoval();
+                        this.checkForTakenTopicByUser(token);
+                    }else if(data.msg === 'success') {
+                        //this.props.refreshTopics(data.array);
+                        this.setState({submitted: true});
+                        this.checkForTakenTopicByUser(token);
+                    }
                 })
                 .catch(err => console.error);
         }
+        setTimeout(()=> {
+            if(this._isMounted) this.setState({submitted: false});
+            clearTimeout();
+        }, 10000);
     }
 
     controlled() {
@@ -138,7 +167,8 @@ export default class TopicItems extends Component {
                             const {content, id, taken, holder, limit} = topic;
                             return(
                                 <TopicItem
-                                multiChoice={this.state.multiChoice} 
+                                resetStateForRemoval={this.resetStateForRemoval}
+                                multiChoice={this.state.multiChoice}
                                 key={id}  
                                 content={content} 
                                 topicId={id}
@@ -146,6 +176,7 @@ export default class TopicItems extends Component {
                                 selectable={this.state.selectable}
                                 limit={limit}
                                 holder={holder}  
+                                holderId={topic.holderId}
                                 selectedTopicId={this.state.selectedTopicId}
                                 toggleSelection={this.toggleSelection}/>
                             );
@@ -161,6 +192,13 @@ export default class TopicItems extends Component {
                             fullWidth={true}>Submit</Button>
                         </Grid>
                         <Grid item xs={5}></Grid>
+                    </Grid>
+                    <Grid container style={{marginTop: '1em'}}>
+                        <Grid item xs={2}></Grid>
+                        <Grid item xs={8}>
+                        <AttachedFiles attachedFilePaths={this.props.assignment.attachedFilePaths}/>
+                        </Grid>
+                        <Grid item xs={2}></Grid>
                     </Grid>
                 </Collapse>
             </div>

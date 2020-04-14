@@ -66,7 +66,7 @@ export default class Access extends Component {
                 } 
                 else {
                     localStorage.setItem('token', data.token);
-                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('userId', data.userId);
                     this.props.confirmLoggin('logged');
                     this.props.history.push('/');
                 }

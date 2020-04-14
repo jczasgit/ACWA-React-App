@@ -6,9 +6,12 @@
 
 # testing
 /coverage
-
+test.js
 #production
 /client/build
+
+#uploads
+/uploads
 
 # misc
 .DS_Store

@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import Header from '../Header';
 import TopicCell from '../TopicCell';
 import Grid from '@material-ui/core/Grid';
+import SocketIOClient from 'socket.io-client';
 
 class Home extends Component {
-    autoRefresh;
+    //autoRefresh;
     _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
             assignments: [],
+            endpoint: 'http://localhost:3001/' // change endpoint based on your need.
         }
         this.getAssignments = this.getAssignments.bind(this);
         this.refreshTopics = this.refreshTopics.bind(this);
@@ -17,8 +19,13 @@ class Home extends Component {
 
     componentDidMount() {
         this._isMounted = true;
+        const {endpoint} = this.state;
         if(!this.props.isLogged) this.props.history.push('/access');
         else this.getAssignments();
+        const socket = SocketIOClient(endpoint);
+        socket.on('newData', (data) => {
+            this.refreshTopics(data);
+        });
     }
 
     componentWillUnmount() {
@@ -50,7 +57,7 @@ class Home extends Component {
                     else {
                         if(this._isMounted){ 
                             this.setState({assignments: data});
-                            this.autoRefresh = setTimeout(this.getAssignments.bind(this), 1000);
+                            //this.autoRefresh = setTimeout(this.getAssignments.bind(this), 1500);
                         }
                     }
                 })

@@ -2,15 +2,29 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import useStyle from './useStyles';
+import Alert from '@material-ui/lab/Alert';
 
 export default class AddTopicConfirmed extends Component {
+    _isMounted;
     constructor(props) {
         super(props);
+        this.state = {
+            uploading: false,
+        }
         this.uploadTopic = this.uploadTopic.bind(this);
     }
 
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     // submitting new assignment!
-    uploadTopic() {
+    async uploadTopic() {
+        if(this._isMounted) this.setState({uploading: true});
         const {values: { title, description, topics, id, dueDate, attachedFiles}} = this.props;
         const data = {title, description, topics, id, dueDate, multiChoice: false, choiceLimit: false}
         //console.log(data);
@@ -26,34 +40,24 @@ export default class AddTopicConfirmed extends Component {
         }
 
         if(attachedFiles.length > 0) {
-            console.log('uploading files')
-            console.log(attachedFiles);
             const formData = new FormData();
-            for (const file of attachedFiles) {
-                formData.append('attachedFile', file);
+            for(let i=0; i<attachedFiles.length; i++) {
+                formData.append('attachedFile', attachedFiles[i], attachedFiles[i].name)
             }
-            console.log(formData);
-            fetch(`/api/uploads/${data.id}`, {method: 'POST', body: formData, headers: {Authorization: `Add ${token}`}})
-                .then(response => response.json())
-                .then(json => {
-                    if(json.msg === 'forbidden') this.props.uploadCheck(false);
-                    else this.props.uploadCheck(true);
-                })
-                .catch(err => this.props.uploadCheck(false));
+            const response = await fetch(`/api/uploads/${data.id}`, {method: 'POST', body: formData, headers: {Authorization: `Add ${token}`}})
+            const json = await response.json();
+            console.log(json);
+            if (json.msg === 'forbidden') console.log('file upload error');
         }
 
-        fetch('/api/add', options)
-            .then(response => response.json())
-            .then(json => {
-                //console.log(json);
-                if(json.msg === 'forbidden') this.props.uploadCheck(false);
-                else this.props.uploadCheck(true)
-            })
-            .catch(err => {
-                //console.error(err);
-                this.props.uploadCheck(false);
-            });
-        this.props.nextStep();
+        const response = await fetch('/api/add', options)
+        const json = await response.json();
+        if(json.msg === 'forbidden') this.props.uploadCheck(false);
+        else {
+            this.props.uploadCheck(true);
+            if(this._isMounted) this.setState({uploading: false});
+            this.props.nextStep();
+        }
     }
 
     continue = e => {
@@ -114,6 +118,7 @@ export default class AddTopicConfirmed extends Component {
                                         {allFiles}
                                     </div>
                                 </div>
+                                {this.state.uploading ? <Alert severity="success">Uploading...</Alert> : null}
                             </div>
                         </Grid>
                         <Grid item xs={2} lg={4}></Grid>
@@ -122,12 +127,12 @@ export default class AddTopicConfirmed extends Component {
                         <Grid item xs={3} lg={4}></Grid>
                         <Grid item xs={3} lg={2}>
                             <Grid item container justify='center' alignItems='center'>
-                                <Button variant='outlined' color='secondary' size='small' onClick={this.previous}>Go Back</Button>
+                                <Button variant='outlined' color='secondary' size='small' disabled={this.state.uploading} onClick={this.previous}>Go Back</Button>
                             </Grid>
                         </Grid>
                         <Grid item xs={3} lg={2}>
                             <Grid item container justify='center' alignItems='center'>
-                                <Button color='primary' variant='contained' size='small' onClick={this.uploadTopic}>Confrim</Button>
+                                <Button color='primary' variant='contained' size='small' disabled={this.state.uploading} onClick={this.uploadTopic}>Confrim</Button>
                             </Grid>
                         </Grid>
                         <Grid item xs={3} lg={4}></Grid>
