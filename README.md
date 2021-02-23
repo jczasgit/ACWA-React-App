@@ -1,3 +1,5 @@
+# DEPRECATED
+
 # This is the Assignment Choosing Web App
 
 The project is about a simple web app for students to choose assignment topics easier.
